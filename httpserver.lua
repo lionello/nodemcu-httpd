@@ -18,7 +18,7 @@ return function (port)
         collectgarbage()
         local _, method, uri
         -- FIXME: skip query string
-        _, _, method, uri = request:find("^([A-Z]+) /([^?]+).- HTTP/[1-9]+.[0-9]+\r\n")
+        _, _, method, uri = request:find("^([A-Z]+) /([^?]*).- HTTP/[1-9]+.[0-9]+\r\n")
         --r.uri = parseUri(r.request)
         --print("Method: "..method)
         --print("Uri: "..uri)
