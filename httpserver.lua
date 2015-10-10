@@ -92,35 +92,26 @@ return function (port)
           end
         elseif method == "GET" then
           if uri == "" then
-            -- Send the file listing to the client
-            connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n")
-            for k,v in pairs(file.list()) do
-              connection:send(k)
-              connection:send("\t")
-              connection:send(v)
-              connection:send("\n")
-            end
+            uri = "index.html"
+          end
+          -- Send the file contents to the client
+          file.close()
+          if not file.open(uri, "r") then
+            connection:send("HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nFile not found\n")
             connection:close()
-          else
-            -- Send the file contents to the client
-            file.close()
-            if not file.open(uri, "r") then
-              connection:send("HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nFile not found\n")
+          end
+
+          local function onSent(connection)
+            local c = file.read(500)
+            if c then
+              connection:send(c)
+            else
+              file.close()
               connection:close()
             end
-
-            local function onSent(connection)
-              local c = file.read(500)
-              if c then
-                connection:send(c)
-              else
-                file.close()
-                connection:close()
-              end
-            end
-            connection:on("sent", onSent)
-            connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n")
           end
+          connection:on("sent", onSent)
+          connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n")
         else
           connection:send("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n\r\n")
           connection:close()
