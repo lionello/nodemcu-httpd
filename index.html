@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head><script type="text/javascript">
+
+var socket = new WebSocket('ws://192.168.100.245:80/websocket.lua');
+socket.binaryType = 'arraybuffer';
+
+function checkKey(e) {
+    e = e || window.event;
+    switch (e.keyCode) {
+    case 32://space
+    	return 1;
+    case 37://left
+    	return 2;
+    case 38://up
+    	return 3;
+    case 39://right
+    	return 4;
+    case 40://down
+    	return 5;
+    default:
+    	return 0;
+	}
+}
+
+var bytearray = new Uint8Array(1);
+
+function onkeydown(e) {
+	var x = checkKey(e);
+	if (x) {
+		bytearray[0] = x;
+		socket.send(bytearray);
+	}
+}
+
+function onkeyup(e) {
+	var x = checkKey(e);
+	if (x) {
+		bytearray[0] = x | 128;
+		socket.send(bytearray);
+	}
+}
+
+document.onkeydown = onkeydown;
+document.onkeyup = onkeyup;
+
+</script></head>
+<body>
+	<form action="c64.lua" method="post">
+		<input type="submit" value="Go!"/>
+	</form>
+	Use cursor keys!
+</body>
+</html>

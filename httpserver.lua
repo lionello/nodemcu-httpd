@@ -9,7 +9,7 @@
 
 return function (port)
 
-  local s = net.createServer(net.TCP, 10) -- 10 seconds client timeout
+  local s = net.createServer(net.TCP, 28800) -- 10 seconds client timeout
   s:listen(
     port,
     function (connection)
@@ -18,7 +18,7 @@ return function (port)
         collectgarbage()
         local _, method, uri
         -- FIXME: skip query string
-        _, _, method, uri = request:find("^([A-Z]+) /([^?]*).- HTTP/[1-9]+.[0-9]+\r\n")
+        method, uri = request:match("^([A-Z]+) /([^?]*).- HTTP/[1-9]+.[0-9]+\r\n")
         --r.uri = parseUri(r.request)
         --print("Method: "..method)
         --print("Uri: "..uri)
@@ -30,7 +30,7 @@ return function (port)
             connection:close()
           else
             -- Track Content-Length so we know when we're done
-            local contentLength = tonumber(string.match(request, "\r\nContent%-Length: (%S+)\r\n"))
+            local contentLength = tonumber(request:match("\r\nContent%-Length: (%S+)\r\n"))
 
             local function done(connection)
               file.close()
@@ -84,13 +84,24 @@ return function (port)
             local func = dofile(uri)
             if func then
               func(connection, request)
-              connection:on("receive", func)
+              -- If you want your function to receive any other packets as well, do this:
+              --connection:on("receive", func)
             else
               connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n")
               connection:close()
             end
           end
         elseif method == "GET" then
+          -- Check for websocket header
+          local secwebsocketkey = request:find("\r\nSec-WebSocket-Key:", 1, true)
+          if secwebsocketkey then
+            local func = dofile(uri)
+            if func then
+              func(connection, request)
+              return
+            end
+          end
+          -- Default document handler
           if uri == "" then
             uri = "index.html"
           end
