@@ -1,0 +1,2 @@
+../nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua
+
