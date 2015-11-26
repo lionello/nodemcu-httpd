@@ -2,7 +2,7 @@
 <html>
 <head><script type="text/javascript">
 
-var socket = new WebSocket('ws://192.168.100.245:80/websocket.lua');
+var socket = new WebSocket('ws://'+window.location.host+'/websocket.lua');
 socket.binaryType = 'arraybuffer';
 
 function checkKey(e) {
