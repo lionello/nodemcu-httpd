@@ -1,0 +1,3 @@
+[submodule "nodemcu-uploader"]
+	path = nodemcu-uploader
+	url = https://github.com/kmpm/nodemcu-uploader.git

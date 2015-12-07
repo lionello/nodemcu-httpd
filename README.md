@@ -8,9 +8,14 @@ This small webserver supports the following HTTP verbs/methods:
 ## Installation
 Clone the project and edit the Wi-Fi settings in `init.lua`. You can use the shell script `up` or execute the following:
 ```
-../nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua
+$ nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua
 ```
-This assumes you've cloned the `nodemcu-uploader` project as well. After uploading, connect the serial console (`screen /dev/ttyUSB0 9600` under most *nix flavors) and reboot the device. The device will print its IP address in the console.
+This assumes you've cloned the `nodemcu-uploader` project as well, which is added as a submodule:
+```
+$ git submodule sync
+$ git submodule update
+```
+After uploading, connect the serial console (`screen /dev/ttyUSB0 9600` under most *nix flavors) and reboot the device. The device will print its IP address in the console.
 
 ## Usage
 Once those files have been uploaded you can manage your device with `curl`, for example to PUT new files on flash:
