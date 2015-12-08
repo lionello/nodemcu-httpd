@@ -12,7 +12,7 @@ $ nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua
 ```
 This assumes you've cloned the `nodemcu-uploader` project as well, which is added as a submodule:
 ```
-$ git submodule sync
+$ git submodule init
 $ git submodule update
 ```
 After uploading, connect the serial console (`screen /dev/ttyUSB0 9600` under most *nix flavors) and reboot the device. The device will print its IP address in the console.
