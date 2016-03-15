@@ -33,6 +33,7 @@ return function (port)
             local contentLength = tonumber(string.match(request, "\r\nContent%-Length: (%S+)\r\n"))
 
             local function done(connection)
+              collectgarbage()
               file.close()
               if contentLength <= 0 then
                 file.remove(uri)
@@ -45,7 +46,7 @@ return function (port)
 
             -- From now on, send everything to the file
             local function writeFile(connection, payload)
-              --print("writeFile")
+              collectgarbage()
               if file.write(payload) then
                 contentLength = contentLength - #payload
                 if contentLength <= 0 then
@@ -96,12 +97,16 @@ return function (port)
           end
           -- Send the file contents to the client
           file.close()
-          if not file.open(uri, "r") then
+          local headers = "HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n"
+          --local encoding = request:find("\r\nAccept%-Encoding: gzip")
+          if file.open(uri .. ".gz", "r") then
+            headers = "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nConnection: close\r\n\r\n"
+          elseif not file.open(uri, "r") then
             connection:send("HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nFile not found\n")
             connection:close()
           end
-
           local function onSent(connection)
+            collectgarbage()
             local c = file.read(500)
             if c then
               connection:send(c)
@@ -111,7 +116,7 @@ return function (port)
             end
           end
           connection:on("sent", onSent)
-          connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n")
+          connection:send(headers)
         else
           connection:send("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n\r\n")
           connection:close()
