@@ -17,10 +17,8 @@ wifiConfig.accessPointIpConfig.netmask = "255.255.255.0"
 wifiConfig.accessPointIpConfig.gateway = "192.168.111.1"
 
 wifiConfig.stationPointConfig = {}
---wifiConfig.stationPointConfig.ssid = "dsl"        -- Name of the WiFi network you want to join
---wifiConfig.stationPointConfig.pwd =  "0xdeadbeef"                -- Password for the WiFi network
-wifiConfig.stationPointConfig.ssid = "Brinc_Teams"        -- Name of the WiFi network you want to join
-wifiConfig.stationPointConfig.pwd =  "innov8hk"                -- Password for the WiFi network
+wifiConfig.stationPointConfig.ssid = "dsl"        -- Name of the WiFi network you want to join
+wifiConfig.stationPointConfig.pwd =  "0xdeadbeef"                -- Password for the WiFi network
 
 -- Tell the chip to connect to the access point
 
