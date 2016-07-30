@@ -4,6 +4,7 @@ This small webserver supports the following HTTP verbs/methods:
 * PUT creates a new file in flash
 * DELETE remove the file from flash
 * POST executes the given lua script (may return a function that receives the payload)
+* OPTIONS returns minimal CORS headers allowing POST from any origin
 
 ## Installation
 Clone the project and edit the Wi-Fi settings in `init.lua`. You can use the shell script `up` or execute the following:
