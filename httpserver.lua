@@ -4,6 +4,7 @@
 -- GET returns the contents of a file in flash
 -- DELETE remove the file from flash
 -- POST executes the given lua script (may return a function that receives the payload)
+-- OPTIONS returns minimal CORS headers allowing POST from any origin
 --
 -- TODO: need a way to return flash contents vs. index.html
 
