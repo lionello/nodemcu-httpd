@@ -8,9 +8,9 @@ This small webserver supports the following HTTP verbs/methods:
 ## Installation
 Clone the project and edit the Wi-Fi settings in `init.lua`. You can use the shell script `up` or execute the following:
 ```
-$ nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua
+$ python nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua
 ```
-This assumes you've cloned the `nodemcu-uploader` project as well, which is added as a submodule:
+This assumes you've cloned the `nodemcu-uploader` project (use `--recursive`) as well, which is added as a submodule:
 ```
 $ git submodule init
 $ git submodule update

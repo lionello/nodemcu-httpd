@@ -1,2 +1,1 @@
-nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua websocket.lua
-
+python nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua websocket.lua c64.lua
