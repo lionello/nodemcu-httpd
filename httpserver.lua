@@ -4,6 +4,7 @@
 -- GET returns the contents of a file in flash
 -- DELETE remove the file from flash
 -- POST executes the given lua script (may return a function that receives the payload)
+-- OPTIONS returns minimal CORS headers allowing POST from any origin
 --
 -- TODO: need a way to return flash contents vs. index.html
 
@@ -138,6 +139,9 @@ local function onConnect(connection)
       if #requests == 1 then
         nextFile()
       end
+    elseif method == "OPTIONS" then
+      connection:send("HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: POST,OPTIONS\r\nConnection: close\r\n\r\n")
+      connection:close()
     else
       connection:send("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n\r\n")
       connection:close()
