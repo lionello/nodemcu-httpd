@@ -97,6 +97,7 @@ local function onConnect(connection)
       end
 
       local function nextFile()
+        collectgarbage()
         if #requests == 0 then return end
         local connection, uri = unpack(requests[1])
 
