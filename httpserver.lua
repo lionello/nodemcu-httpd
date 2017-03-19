@@ -12,6 +12,10 @@ local requests = {}
 
 local function onConnect(connection)
 
+  local function close()
+    connection:close()
+  end
+
   local function onReceive(connection, request)
     collectgarbage()
     local method, uri = request:match("^([A-Z]+) /([^?]*).- HTTP/[1-9]+.[0-9]+\r\n")
@@ -19,8 +23,7 @@ local function onConnect(connection)
     if method == "PUT" and uri ~= "" then
       file.close()
       if not file.open("temp/put", "w") then
-        connection:send("HTTP/1.1 500 Error\r\nConnection: close\r\n\r\nCreate error\n")
-        connection:close()
+        connection:send("HTTP/1.1 500 Error\r\nConnection: close\r\n\r\nCreate error\n", close)
       else
         -- Track Content-Length so we know when we're done
         local contentLength = tonumber(request:match("\r\nContent%-Length: (%S+)\r\n"))
@@ -43,12 +46,12 @@ local function onConnect(connection)
           if file.write(payload) then
             contentLength = contentLength - #payload
             if contentLength <= 0 then
-              connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\nSaved\n")
-              connection:close()
+              connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\nSaved\n", close)
+              done()
             end
           else
-            connection:send("HTTP/1.1 500 Error\r\nConnection: close\r\n\r\nWrite error\n")
-            connection:close()
+            connection:send("HTTP/1.1 500 Error\r\nConnection: close\r\n\r\nWrite error\n", close)
+            done()
           end
         end
         connection:on("receive", writeFile)
@@ -65,14 +68,11 @@ local function onConnect(connection)
     elseif method == "DELETE" then
       -- Delete the file from flash
       file.remove(uri)
-      connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\nDeleted\n")
-      connection:close()
+      connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\nDeleted\n", close)
     elseif method == "POST" then
       if uri == "" then
         -- Reboot the device
-        connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\nRebooting\n")
-        connection:close()
-        node.restart()
+        connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\nRebooting\n", node.restart)
       else
         -- Poor man's CGI
         local func = dofile(uri)
@@ -81,8 +81,7 @@ local function onConnect(connection)
           -- If you want your function to receive any other packets as well, do this:
           --connection:on("receive", func)
         else
-          connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n")
-          connection:close()
+          connection:send("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n", close)
         end
       end
     elseif method == "GET" then
@@ -97,6 +96,7 @@ local function onConnect(connection)
       end
 
       local function nextFile()
+        collectgarbage()
         if #requests == 0 then return end
         local connection, uri = unpack(requests[1])
 
@@ -106,8 +106,7 @@ local function onConnect(connection)
         if #uri < 30 and file.open(uri .. ".gz", "r") then
           headers = "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nConnection: close\r\n\r\n"
         elseif not file.open(uri, "r") then
-          connection:send("HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nFile not found\n")
-          connection:close()
+          connection:send("HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nFile not found\n", close)
           table.remove(requests, 1)
           nextFile()
           return
@@ -140,11 +139,9 @@ local function onConnect(connection)
         nextFile()
       end
     elseif method == "OPTIONS" then
-      connection:send("HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: POST,OPTIONS\r\nConnection: close\r\n\r\n")
-      connection:close()
+      connection:send("HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: POST,OPTIONS\r\nConnection: close\r\n\r\n", close)
     else
-      connection:send("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n\r\n")
-      connection:close()
+      connection:send("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n\r\n", close)
     end
   end
 

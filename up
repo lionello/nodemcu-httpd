@@ -1,2 +1,3 @@
 python nodemcu-uploader/nodemcu-uploader.py upload init.lua httpserver.lua
+python nodemcu-uploader/nodemcu-uploader.py node restart
 
